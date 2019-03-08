@@ -8,13 +8,30 @@
 
 import UIKit
 import AlamofireImage
+import Parse
 
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     @IBOutlet weak var cameraImageView: UIImageView!
     
     @IBOutlet weak var commentField: UITextField!
     @IBAction func onSubmit(_ sender: Any) {
+        let post = PFObject(className: "Posts")
+        post["caption"] = commentField.text!
+        post["author"] = PFUser.current()!
         
+        let imageData = cameraImageView.image?.pngData()
+        let file = PFFileObject(data: imageData!)
+        
+        post["image"] = file
+        
+        post.saveInBackground { (success, error) in
+            if success {
+                print("Image saved")
+            } else {
+                print("Error")
+            }
+            
+        }
     }
     
     @IBAction func onCameraButton(_ sender: Any) {
